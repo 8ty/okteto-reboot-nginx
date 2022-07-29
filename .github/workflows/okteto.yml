@@ -1,0 +1,30 @@
+name: Okteto Reboot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '05 21 * * *'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        uses: actions/checkout@v2
+      - uses: okteto/login@main
+        with:
+          token: ${{ secrets.OKTETO_TOKEN }}
+
+      - uses: okteto/namespace@main
+        with:
+          namespace: ${{ secrets.OKTETO_NAME }}
+
+      - name: Destroy stack
+        uses: okteto/destroy-stack@main
+        with:
+          name: nginx
+
+      - name: Create stack
+        uses: okteto/deploy-stack@main
+        with:
+          name: nginx
